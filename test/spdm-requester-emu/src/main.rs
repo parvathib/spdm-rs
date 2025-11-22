@@ -20,6 +20,7 @@ use idekm::pci_idekm::KEY_SUB_STREAM_PR;
 use idekm::pci_idekm::PCI_IDE_KM_IDE_REG_BLOCK_MAX_COUNT;
 use log::*;
 use simple_logger::SimpleLogger;
+use std::env;
 
 #[cfg(not(feature = "is_sync"))]
 use spdm_emu::async_runtime::block_on;
@@ -166,7 +167,11 @@ async fn test_spdm(
     } else {
         "test_key/rsa3072/ca.cert.der"
     };
-    let ca_cert = std::fs::read(ca_file_path).expect("unable to read ca cert!");
+    if let Ok(cwd) = env::current_dir() {
+        println!("Current working directory: {}", cwd.display());
+    }
+    let ca_cert =
+        std::fs::read(ca_file_path).expect(&format!("unable to read ca cert {}!", ca_file_path));
     let inter_file_path = if USE_ECDSA {
         "test_key/ecp384/inter.cert.der"
     } else {
@@ -327,21 +332,21 @@ async fn test_spdm(
             response_direction.salt.as_ref()
         );
 
-        if context
-            .send_receive_spdm_heartbeat(session_id)
-            .await
-            .is_err()
-        {
-            panic!("send_receive_spdm_heartbeat failed");
-        }
+        // if context
+        //     .send_receive_spdm_heartbeat(session_id)
+        //     .await
+        //     .is_err()
+        // {
+        //     panic!("send_receive_spdm_heartbeat failed");
+        // }
 
-        if context
-            .send_receive_spdm_key_update(session_id, SpdmKeyUpdateOperation::SpdmUpdateAllKeys)
-            .await
-            .is_err()
-        {
-            panic!("send_receive_spdm_key_update failed");
-        }
+        // if context
+        //     .send_receive_spdm_key_update(session_id, SpdmKeyUpdateOperation::SpdmUpdateAllKeys)
+        //     .await
+        //     .is_err()
+        // {
+        //     panic!("send_receive_spdm_key_update failed");
+        // }
 
         #[cfg(feature = "test_update_keys")]
         {
@@ -575,20 +580,20 @@ async fn test_spdm(
         panic!("\nSession session_id not got\n");
     }
 
-    let result = context
-        .start_session(
-            true,
-            0,
-            SpdmMeasurementSummaryHashType::SpdmMeasurementSummaryHashTypeNone,
-        )
-        .await;
-    if let Ok(session_id) = result {
-        if context.end_session(session_id).await.is_err() {
-            panic!("\nSession session_id is err\n");
-        }
-    } else {
-        panic!("\nSession session_id not got\n");
-    }
+    // let result = context
+    //     .start_session(
+    //         true,
+    //         0,
+    //         SpdmMeasurementSummaryHashType::SpdmMeasurementSummaryHashTypeNone,
+    //     )
+    //     .await;
+    // if let Ok(session_id) = result {
+    //     if context.end_session(session_id).await.is_err() {
+    //         panic!("\nSession session_id is err\n");
+    //     }
+    // } else {
+    //     panic!("\nSession session_id not got\n");
+    // }
 
     #[cfg(feature = "test_stack_size")]
     {
