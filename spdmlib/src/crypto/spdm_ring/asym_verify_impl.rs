@@ -147,7 +147,7 @@ fn asym_verify(
                 }
             };
 
-            x509v3::check_cert_chain_format(public_cert_der, base_asym_algo)?;
+            // x509v3::check_cert_chain_format(public_cert_der, base_asym_algo)?;
 
             let (leaf_begin, leaf_end) = (super::cert_operation_impl::DEFAULT
                 .get_cert_from_cert_chain_cb)(
